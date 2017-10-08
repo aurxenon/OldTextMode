@@ -1,11 +1,16 @@
-package net.edcubed.Smitty;
+package net.edcubed.TextMode;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
-import net.edcubed.SmittyCommons.*;
+
+import net.edcubed.NetworkStuff.NetworkManager;
+import net.edcubed.TextModeCommons.*;
+import net.edcubed.TextMode.*;
 
 public class ExtraUtils {
     ArrayList<Player> gamePlayers = new ArrayList<Player>();
+
     public ExtraUtils(){}
     public ArrayList<Player> getGamePlayers() {return gamePlayers;}
     public void setGamePlayers(ArrayList<Player> players) {gamePlayers = players;}
@@ -15,5 +20,15 @@ public class ExtraUtils {
         Random rand = new Random();
         int randomNum = rand.nextInt((max - min) + 1) + min;
         return randomNum;
+    }
+    public void exitGame() {
+        try {
+            Globals.networkManager.disconnect();
+            Globals.terminal.exitPrivateMode();
+            Globals.terminal.close();
+            System.exit(0);
+        }catch(IOException e){
+            e.printStackTrace();
+        }
     }
 }

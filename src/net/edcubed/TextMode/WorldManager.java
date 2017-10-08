@@ -1,7 +1,7 @@
-package net.edcubed.Smitty;
+package net.edcubed.TextMode;
 
 import java.util.ArrayList;
-import net.edcubed.SmittyCommons.Place;
+import net.edcubed.TextModeCommons.Place;
 
 public class WorldManager {
     private ArrayList<Place> generatedTerrain;
