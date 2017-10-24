@@ -90,7 +90,7 @@ public class NetworkManager {
                     }
                 }
             }
-        });
+        }).start();
 
         //keep alive thread thread
         new Thread(new Runnable() {
@@ -98,7 +98,7 @@ public class NetworkManager {
                 while (true) {
                     try {
                         Thread.sleep(15000);
-                        sendUDPData("i'm still here please don't leave me");
+                        sendTCPData("i'm still here please don't leave me");
                         if (Constants.DEBUG) {
                             System.out.println("Sending keep alive");
                         }
@@ -123,7 +123,7 @@ public class NetworkManager {
     public void sendTCPData(Object message) {
         try {
             this.objectOutput.writeObject(message);
-            System.out.println("Sending tcp data to " + tcpSocket.getInetAddress() + " on port " + tcpSocket.getPort());
+            System.out.println("my port is " + tcpSocket.getLocalPort() + " Sending tcp data of type" + message.getClass() + " to " + tcpSocket.getInetAddress() + " on port " + tcpSocket.getPort());
         }catch(IOException e){
             e.printStackTrace();
         }

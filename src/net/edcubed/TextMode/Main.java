@@ -5,9 +5,11 @@ import java.util.ArrayList;
 
 import net.edcubed.GraphicalStuff.Display;
 import net.edcubed.InputStuff.KeyboardListener;
+import net.edcubed.InputStuff.KeyboardManager;
 import net.edcubed.NetworkStuff.NetworkListener;
 import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.input.KeyType;
+import net.edcubed.NetworkStuff.NetworkManager;
 import net.edcubed.TextModeCommons.*;
 
 public class Main implements KeyboardListener,NetworkListener{
@@ -23,14 +25,19 @@ public class Main implements KeyboardListener,NetworkListener{
     public static void main(String[] args) {
         String username = Integer.toString(extraUtils.randInt(0,100));
         me = new Player(username, coords);
-        Globals.networkManager.addListener(new Main());
 
         try{
             Globals.display = new Display();
+            Globals.keyboardManager = new KeyboardManager();
+            Globals.networkManager = new NetworkManager("localhost",26656,26655);
+            Globals.keyboardManager.addListener(new Main());
+            Globals.networkManager.addListener(new Main());
         }catch(IOException e){
             e.printStackTrace();
         }
+    }
 
+    public void UpdateConnection() {
         //update thread
         new Thread(new Runnable() {
             public void run() {
@@ -38,18 +45,9 @@ public class Main implements KeyboardListener,NetworkListener{
                     try {
                         Thread.sleep(50);
                         Globals.networkManager.sendTCPData(new PlayerMP(PlayerMP.Status.PLAYER, me, Constants.VERSION));
-                    }catch(InterruptedException e){
+                    } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                }
-            }
-        }).start();
-
-        //keyboard input
-        new Thread(new Runnable() {
-            public void run() {
-                while (true) {
-
                 }
             }
         }).start();
@@ -79,6 +77,7 @@ public class Main implements KeyboardListener,NetworkListener{
 
     //dealing with messages
     public void receivedMessage(Object message) {
+        System.out.println("Received message " + message.getClass());
         if(message instanceof ArrayList<?>)
         {
             //tcp
@@ -101,6 +100,7 @@ public class Main implements KeyboardListener,NetworkListener{
             //udp
             if(((ArrayList<?>)message).get(0) instanceof Player)
             {
+                extraUtils.log("Receiving player list");
                 Main.extraUtils.setGamePlayers((ArrayList<Player>)message);
                 Main.DrawScreen();
             }
@@ -131,27 +131,33 @@ public class Main implements KeyboardListener,NetworkListener{
         }
     }
 
-    //just draws the screen every second
+    //just draws the screen every tick
     public static void DrawScreen() {
-        try{
-            //always draw terrain first
-            Globals.display.clear();
-            if (worldUtils.getGeneratedTerrain() != null) {
-                for (int i = 0; i < worldUtils.getGeneratedTerrain().size(); i++) {
-                    int terrainX = worldUtils.getGeneratedTerrain().get(i).getX();
-                    int terrainY = worldUtils.getGeneratedTerrain().get(i).getY();
-                    Globals.display.drawSymbol(Constants.TERRAIN_CHAR, terrainX, terrainY);
+        new Thread(new Runnable() {
+            public void run() {
+                try{
+                    //always draw terrain first
+                    Globals.display.clear();
+                    if (worldUtils.getGeneratedTerrain() != null) {
+                        for (int i = 0; i < worldUtils.getGeneratedTerrain().size(); i++) {
+                            int terrainX = worldUtils.getGeneratedTerrain().get(i).getX();
+                            int terrainY = worldUtils.getGeneratedTerrain().get(i).getY();
+                            Globals.display.drawSymbol(Constants.TERRAIN_CHAR, terrainX, terrainY);
+                            //extraUtils.log("Drawing terrain at X:" + terrainX + " Y:" + terrainY);
+                        }
+                    }
+
+                    //always draw players last
+                    for (int i = 0;  i < extraUtils.getGamePlayers().size(); i++) {
+                        int playerX = extraUtils.getGamePlayers().get(i).getCoords()[0];
+                        int playerY = extraUtils.getGamePlayers().get(i).getCoords()[1];
+                        Globals.display.drawSymbol(Constants.PLAYER_CHAR, playerX, playerY);
+                        //extraUtils.log("Drawing player");
+                    }
+                }catch(IOException e){
+                    e.printStackTrace();
                 }
             }
-
-            //always draw players last
-            for (int i = 0;  i < extraUtils.getGamePlayers().size(); i++) {
-                int playerX = extraUtils.getGamePlayers().get(i).getCoords()[0];
-                int playerY = extraUtils.getGamePlayers().get(i).getCoords()[1];
-                Globals.display.drawSymbol(Constants.PLAYER_CHAR, playerX, playerY);
-            }
-        }catch(IOException e){
-            e.printStackTrace();
-        }
+        }).start();
     }
 }

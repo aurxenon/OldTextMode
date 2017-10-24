@@ -1,7 +1,9 @@
 package net.edcubed.TextMode;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Random;
 
 import net.edcubed.NetworkStuff.NetworkManager;
@@ -30,5 +32,8 @@ public class ExtraUtils {
         }catch(IOException e){
             e.printStackTrace();
         }
+    }
+    public void log(Object data) {
+        System.out.println(new SimpleDateFormat("MM/dd/yyyy HH:mm:ss").format(new Date()) + " - " + data.toString());
     }
 }

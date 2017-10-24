@@ -7,7 +7,7 @@ import net.edcubed.NetworkStuff.NetworkManager;
 
 public class Globals {
     public static Terminal terminal;
-    public static NetworkManager networkManager = new NetworkManager("localhost",26656,26655);
+    public static NetworkManager networkManager;
     public static KeyboardManager keyboardManager;
     public static Display display;
 }

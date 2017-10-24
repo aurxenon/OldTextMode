@@ -8,9 +8,9 @@ import com.googlecode.lanterna.screen.TerminalScreen;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.Terminal;
 import net.edcubed.InputStuff.KeyboardManager;
+import net.edcubed.NetworkStuff.NetworkManager;
 import net.edcubed.TextMode.*;
 
-import javax.xml.soap.Text;
 import java.io.IOException;
 
 public class Display {
@@ -32,9 +32,6 @@ public class Display {
         Globals.terminal.clearScreen();
         columns = terminalSize.getColumns();
         rows = terminalSize.getRows();
-
-        Globals.keyboardManager = new KeyboardManager();
-        Globals.keyboardManager.addListener(new Main());
     }
 
     public void drawSymbol(Symbol character, int x, int y) throws IOException{
